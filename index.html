@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self';">
     
     <title>XSS</title>
 
@@ -89,11 +90,11 @@
 
         // XSS vulnerability #1
 
-        userParam = params.get("name");
-        userName = "applicant";
+        const userParam = params.get("name");
+        const userName = userParam !== null ? encodeHTML(userParam) : "applicant";
 
-        if (userParam !== null) {
-            userName = userParam;
+        function encodeHTML(input) {
+            return input.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
         }
 
         document.getElementById("welcome-text").innerHTML = "<h1>How do you do, " + userName + "?</h1>";
@@ -106,8 +107,9 @@
         input.addEventListener("input", updateValue);
 
         function updateValue(e) {
-            log.innerHTML = e.target.value;
+            log.textContent = e.target.value;
         }
+
 
         //  XSS vulnerability #3
 
@@ -118,7 +120,7 @@
         showButton.addEventListener("click", showHTML);
 
         function showHTML() {
-            htmlOutput.innerHTML = htmlInput.value;
+            htmlOutput.textContent = htmlInput.value;
         }
 
         //  XSS vulnerability #4
